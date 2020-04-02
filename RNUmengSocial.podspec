@@ -1,3 +1,6 @@
+require 'json'
+
+package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
   s.name         = "RNUmengSocial"
@@ -6,7 +9,7 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   RNUmengSocial
                    DESC
-  s.homepage     = ""
+  s.homepage     = "https://github.com/1123746696/react-native-umengsocial.git"
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
   s.author             = { "author" => "author@domain.cn" }
@@ -18,19 +21,18 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   #s.dependency "others"
-  pod 'UMCCommon'
-  pod 'UMCSecurityPlugins'
-  pod 'UMCCommonLog'
-      # U-Share SDK UI模块（分享面板，建议添加）
-      pod 'UMCShare/UI'
-      # 集成微信(完整版14.4M)
-      pod 'UMCShare/Social/WeChat'
+  s.dependency 'UMCCommon'
+  s.dependency 'UMCSecurityPlugins'
+  s.dependency 'UMCCommonLog'
+  # U-Share SDK UI模块（分享面板，建议添加）
+  s.dependency 'UMCShare/UI'
+  # 集成微信(完整版14.4M)
+  s.dependency 'UMCShare/Social/WeChat'
 
-      # 集成邮件
-      pod 'UMCShare/Social/Email'
-
-      # 集成短信
-      pod 'UMCShare/Social/SMS'
+  # 集成邮件
+  s.dependency 'UMCShare/Social/Email'
+  # 集成短信
+  s.dependency 'UMCShare/Social/SMS'
 
 end
 

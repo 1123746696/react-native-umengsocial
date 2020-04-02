@@ -32,5 +32,6 @@ repositories {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
+    compile 'com.umeng.sdk:common:1.5.0'
+    compile 'com.umeng.sdk:utdid:1.1.5.3'
 }
-  
