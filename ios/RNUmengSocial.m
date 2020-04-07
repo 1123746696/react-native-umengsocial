@@ -1,6 +1,8 @@
 
 #import "RNUmengSocial.h"
-#import <UMSocialCore/UMSocialCore.h>
+//#import <UMSocialCore/UMSocialCore.h>
+#import <UMCommon/UMCommon.h>
+#import <UMShare/UMShare.h>
 @implementation RNUmengSocial
 RCT_EXPORT_MODULE();
 /**
@@ -9,7 +11,8 @@ RCT_EXPORT_MODULE();
  *  @param key          key
  */
 RCT_EXPORT_METHOD(setUmengAppKey:(NSString *)key){
-    [[UMSocialManager defaultManager] setUmSocialAppkey:key];
+    [UMConfigure initWithAppkey:key channel:@"App Store"];
+
 }
 /**
  *  设置Umeng key
@@ -17,7 +20,7 @@ RCT_EXPORT_METHOD(setUmengAppKey:(NSString *)key){
  *  @param key          key
  */
 RCT_EXPORT_METHOD(openLog:(BOOL)isOpen){
-    [[UMSocialManager defaultManager] openLog:isOpen];
+    [UMConfigure setLogEnabled:isOpen];
 }
 /***
  * 设置平台账号
@@ -45,7 +48,7 @@ RCT_EXPORT_METHOD(share:(NSString *)title description:(NSString *)description ur
     while (presentingViewController.presentedViewController != nil) {
         presentingViewController = presentingViewController.presentedViewController;
     }
-    [UmengSocial shareWithTitle:title description:description url:url image:imageUrl type:(UMSocialPlatformType)type fromScene:presentingViewController complate:^(id data, NSError *error){
+    [RNUmengSocial shareWithTitle:title description:description url:url image:imageUrl type:type fromScene:presentingViewController complate:^(id result, NSError *error) {
         NSString *message = nil;
         if (!error) {
             message = [NSString stringWithFormat:@"分享成功"];
@@ -54,8 +57,8 @@ RCT_EXPORT_METHOD(share:(NSString *)title description:(NSString *)description ur
             message = [NSString stringWithFormat:@"失败原因Code: %d\n",(int)error.code];
             callback(@[[NSNumber numberWithInteger:error.code],@{@"result":message}]);
         }
-        
     }];
+    
 }
 
 RCT_EXPORT_METHOD(shareMiniProgram:(NSString *)title description:(NSString *)description url:(NSString *)url imageUrl:(NSString *)imageUrl userName:(NSString *)userName path:(NSString *)path callback:(RCTResponseSenderBlock)callback){
@@ -83,20 +86,6 @@ RCT_EXPORT_METHOD(shareMiniProgram:(NSString *)title description:(NSString *)des
             message = [NSString stringWithFormat:@"失败原因Code: %d\n",(int)error.code];
             callback(@[[NSNumber numberWithInteger:error.code],@{@"result":message}]);
         }
-        //      if (error) {
-        //          UMSocialLogInfo(@"************Share fail with error %@*********",error);
-        //      }else{
-        //          if ([data isKindOfClass:[UMSocialShareResponse class]]) {
-        //              UMSocialShareResponse *resp = data;
-        //              //分享结果消息
-        //              UMSocialLogInfo(@"response message is %@",resp.message);
-        //              //第三方原始返回的数据
-        //              UMSocialLogInfo(@"response originalResponse data is %@",resp.originalResponse);
-        //          }else{
-        //              UMSocialLogInfo(@"response data is %@",data);
-        //          }
-        //      }
-        //      [self alertWithError:error];
     }];
 }
 
@@ -107,7 +96,7 @@ RCT_EXPORT_METHOD(shareMiniProgram:(NSString *)title description:(NSString *)des
  *  @param callback       分享成功的回调
  */
 RCT_EXPORT_METHOD(authWithPlatform:(NSInteger)type callback:(RCTResponseSenderBlock)callback{
-    [UmengSocial authWithPlatform:type callback:callback];
+    [RNUmengSocial authWithPlatform:type callback:callback];
 })
 
 /**
@@ -124,11 +113,11 @@ RCT_EXPORT_METHOD(isInstallWithPlatform:(NSInteger)type resolver:(RCTPromiseReso
     NSString *shareTitle = title;
     NSString *shareContent =description;
     NSString *shareUrl =url;
-    if ([BStringUtil emptyOrNull:url]) {
+    if ([RNUmengSocial emptyOrNull:url]) {
         shareUrl=@"https://www.bnq.com.cn";
     }
     id shareImage = imageUrl;
-    if ([BStringUtil emptyOrNull:imageUrl]) {
+    if ([RNUmengSocial emptyOrNull:imageUrl]) {
         shareImage=[UIImage imageNamed:@"share"];
     }
     UMSocialMessageObject *messageObject = [UMSocialMessageObject messageObject];
@@ -166,11 +155,19 @@ RCT_EXPORT_METHOD(isInstallWithPlatform:(NSInteger)type resolver:(RCTPromiseReso
         }
     }];
 }
+/**
+ * 判断字串是否为空
+ * @param str
+ * @return
+ */
++(bool) emptyOrNull:(NSString *)str
+{
+    return str == nil || (NSNull *)str == [NSNull null] || str.length == 0||[str isKindOfClass:[NSNull class]];
+}
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
 }
-RCT_EXPORT_MODULE()
 
 @end
   
