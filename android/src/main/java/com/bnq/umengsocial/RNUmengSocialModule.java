@@ -16,6 +16,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.bnq.umengsocial.R;
+import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.Config;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.ShareAction;
@@ -49,7 +50,7 @@ public class RNUmengSocialModule extends ReactContextBaseJavaModule {
 
       @Override
       public String getName() {
-          return "UmengSocial";
+          return "RNUmengSocial";
       }
 
       @ReactMethod
@@ -59,6 +60,8 @@ public class RNUmengSocialModule extends ReactContextBaseJavaModule {
       @ReactMethod
       public void setUmengAppKey(String key) {
           UMShareAPI.get(getCurrentActivity().getApplicationContext());
+
+          UMConfigure.init(getCurrentActivity().getApplicationContext(),key,"android",UMConfigure.DEVICE_TYPE_PHONE,"");
       }
 
       @ReactMethod
@@ -293,10 +296,8 @@ public class RNUmengSocialModule extends ReactContextBaseJavaModule {
        */
       @ReactMethod
       public void authWithPlatform(Integer type, Callback callback) {
-
+          Log.i("authWithPlatform", "start");
           mCallback = callback;
-
-
           switch (type) {
               case 0:
                   mPlaform = SHARE_MEDIA.SINA;
@@ -317,8 +318,6 @@ public class RNUmengSocialModule extends ReactContextBaseJavaModule {
                   mPlaform = SHARE_MEDIA.SMS;
                   break;
           }
-
-
           getCurrentActivity().runOnUiThread(new Runnable() {
               @Override
               public void run() {
@@ -351,13 +350,13 @@ public class RNUmengSocialModule extends ReactContextBaseJavaModule {
 
                               @Override
                               public void onError(SHARE_MEDIA share_media, int i, Throwable throwable) {
-                                  Log.i("getUserInfoWithPlatform", "获取失败");
+                                  Log.i("authonError", throwable.toString());
                                   mCallback.invoke(1);
                               }
 
                               @Override
                               public void onCancel(SHARE_MEDIA share_media, int i) {
-                                  Log.i("getUserInfoWithPlatform", "取消");
+                                  Log.i("authonCancel", "取消");
                                   mCallback.invoke(1);
                               }
 
